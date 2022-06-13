@@ -4043,7 +4043,7 @@ var useUserDetails = function useUserDetails() {
 
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     updateUserDetails();
-  }, [userVerified, localStorage.getItem('user_token')]);
+  }, [localStorage.getItem('user_token')]);
   (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
     var answers = localStorage.getItem('quiz_answers') ? JSON.parse(localStorage.getItem('quiz_answers')) : [];
 

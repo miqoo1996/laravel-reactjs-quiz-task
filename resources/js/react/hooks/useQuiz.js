@@ -282,7 +282,7 @@ const useUserDetails = () => {
 
     useEffect(() => {
         updateUserDetails()
-    }, [userVerified, localStorage.getItem('user_token')]);
+    }, [localStorage.getItem('user_token')]);
 
     useEffect(() => {
         const answers = localStorage.getItem('quiz_answers') ? JSON.parse(localStorage.getItem('quiz_answers')) : [];

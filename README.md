@@ -22,6 +22,7 @@ Installation
 Instructions
 ---
 <p>Admin user credentials</p>
+<p>URL: <strong>doman.example/login</strong></p>
 <p>Username: <strong>admin@gmail.com</strong></p>
 <p>Password: <strong>admin123</strong></p>
 

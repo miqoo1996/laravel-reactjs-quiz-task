@@ -36,13 +36,17 @@ const useQuiz = () => {
 
     const { id } = useParams();
 
+    const storageAnswers = localStorage.getItem('quiz_answers') ? JSON.parse(localStorage.getItem('quiz_answers')) : []
+
+    const [userAnswers, setUserAnswers] = useState(storageAnswers);
+
     const [isLoading, setIsLoading] = useState(true);
     const [sessionStarted, setSessionStared] = useState(Boolean(localStorage.getItem('quiz_session_started')));
     const [data, setData] = useState([]);
     const [quiz, setQuiz] = useState(null);
     const [tokenizationData, setTokenizationData] = useState({duration: 0, expired: Boolean(localStorage.getItem('quiz_token_expired'))});
     const [modes, setModes] = useState([]);
-    const [activeMode, setActiveMode] = useState('');
+    const [activeMode, setActiveMode] = useState(localStorage.getItem('activeMode') || '');
     const [quizMotFound, setQuizNotFound] = useState(true);
     const [endSessionDetails, setEndSessionDetails] = useState({
         answeredCount: 0,
@@ -139,8 +143,12 @@ const useQuiz = () => {
 
     const handelChangeMode = (mode) => {
         if (sessionStarted && confirm(data.restart_session_text)) {
+            localStorage.removeItem('quiz_answers');
+            setUserAnswers([]);
             tokenization();
         }
+
+        localStorage.setItem('activeMode', mode);
 
         setActiveMode(mode);
     }
@@ -194,9 +202,11 @@ const useQuiz = () => {
 const useQuestionnaire = () => {
     const {apiUrl} = useContext(AppContext);
 
-    const storageAnswers = localStorage.getItem('quiz_answers') ? JSON.parse(localStorage.getItem('quiz_answers')) : []
+    const [userAnswers, setUserAnswers] = useState([]);
 
-    const [userAnswers, setUserAnswers] = useState(storageAnswers);
+    useEffect(() => {
+        setUserAnswers( localStorage.getItem('quiz_answers') ? JSON.parse(localStorage.getItem('quiz_answers')) : []);
+    }, [localStorage.getItem('quiz_answers')]);
 
     const handleSubmitAnswer = (question, name) => {
         const value = document.querySelector(`[name="${name}"]:checked`)?.value;
@@ -239,12 +249,10 @@ const useUserDetails = () => {
     const [userVerified, setUserVerified] = useState(false);
     const [userDetails, setUserDetails] = useState({});
 
-    const userToken = localStorage.getItem('user_token');
-
     const handleSubmit = (e) => {
         e.preventDefault();
 
-        axios.put(`${apiUrl}/quiz/${id}/${userToken}/add-guest-user`, FormSerializeJSON(e.currentTarget)).then(response => response.data).then(data => {
+        axios.put(`${apiUrl}/quiz/${id}/${localStorage.getItem('user_token')}/add-guest-user`, FormSerializeJSON(e.currentTarget)).then(response => response.data).then(data => {
             if (Object.values(data).length) {
                 setUserVerified(true);
                 setUserDetails(data);
@@ -258,22 +266,42 @@ const useUserDetails = () => {
         });
     }
 
-    useEffect(() => {
-        axios.get(`${apiUrl}/quiz/${id}/${userToken}/get-guest-user`).then(response => response.data).then(data => {
+    const initializeUserDetails = () => {
+        setUserVerified(false);
+        setUserDetails({ });
+    };
+
+    const updateUserDetails = () => {
+        axios.get(`${apiUrl}/quiz/${id}/${localStorage.getItem('user_token')}/get-guest-user`).then(response => response.data).then(data => {
             if (Object.values(data).length) {
                 setUserVerified(true);
                 setUserDetails(data);
             }
         });
-    }, [userToken]);
+    };
+
+    useEffect(() => {
+        updateUserDetails()
+    }, [userVerified, localStorage.getItem('user_token')]);
+
+    useEffect(() => {
+        const answers = localStorage.getItem('quiz_answers') ? JSON.parse(localStorage.getItem('quiz_answers')) : [];
+
+        if (!answers.length) {
+            initializeUserDetails();
+        }
+
+    }, [localStorage.getItem('quiz_answers')])
 
     return {
         userVerified: userVerified,
         userDetails: {
             ...userDetails,
-            token: userToken,
+            token: localStorage.getItem('user_token'),
         },
-        handleSubmit
+        handleSubmit,
+        updateUserDetails,
+        initializeUserDetails
     };
 }
 

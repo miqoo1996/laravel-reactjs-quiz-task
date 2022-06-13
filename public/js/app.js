@@ -3721,57 +3721,64 @@ var useQuiz = function useQuiz() {
   var _useParams = (0,react_router__WEBPACK_IMPORTED_MODULE_8__.useParams)(),
       id = _useParams.id;
 
-  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(true),
+  var storageAnswers = localStorage.getItem('quiz_answers') ? JSON.parse(localStorage.getItem('quiz_answers')) : [];
+
+  var _useState = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(storageAnswers),
       _useState2 = _slicedToArray(_useState, 2),
-      isLoading = _useState2[0],
-      setIsLoading = _useState2[1];
+      userAnswers = _useState2[0],
+      setUserAnswers = _useState2[1];
 
-  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(Boolean(localStorage.getItem('quiz_session_started'))),
+  var _useState3 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(true),
       _useState4 = _slicedToArray(_useState3, 2),
-      sessionStarted = _useState4[0],
-      setSessionStared = _useState4[1];
+      isLoading = _useState4[0],
+      setIsLoading = _useState4[1];
 
-  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+  var _useState5 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(Boolean(localStorage.getItem('quiz_session_started'))),
       _useState6 = _slicedToArray(_useState5, 2),
-      data = _useState6[0],
-      setData = _useState6[1];
+      sessionStarted = _useState6[0],
+      setSessionStared = _useState6[1];
 
-  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+  var _useState7 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
       _useState8 = _slicedToArray(_useState7, 2),
-      quiz = _useState8[0],
-      setQuiz = _useState8[1];
+      data = _useState8[0],
+      setData = _useState8[1];
 
-  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+  var _useState9 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(null),
+      _useState10 = _slicedToArray(_useState9, 2),
+      quiz = _useState10[0],
+      setQuiz = _useState10[1];
+
+  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
     duration: 0,
     expired: Boolean(localStorage.getItem('quiz_token_expired'))
   }),
-      _useState10 = _slicedToArray(_useState9, 2),
-      tokenizationData = _useState10[0],
-      setTokenizationData = _useState10[1];
-
-  var _useState11 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
       _useState12 = _slicedToArray(_useState11, 2),
-      modes = _useState12[0],
-      setModes = _useState12[1];
+      tokenizationData = _useState12[0],
+      setTokenizationData = _useState12[1];
 
-  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(''),
+  var _useState13 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
       _useState14 = _slicedToArray(_useState13, 2),
-      activeMode = _useState14[0],
-      setActiveMode = _useState14[1];
+      modes = _useState14[0],
+      setModes = _useState14[1];
 
-  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(true),
+  var _useState15 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(localStorage.getItem('activeMode') || ''),
       _useState16 = _slicedToArray(_useState15, 2),
-      quizMotFound = _useState16[0],
-      setQuizNotFound = _useState16[1];
+      activeMode = _useState16[0],
+      setActiveMode = _useState16[1];
 
-  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
+  var _useState17 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(true),
+      _useState18 = _slicedToArray(_useState17, 2),
+      quizMotFound = _useState18[0],
+      setQuizNotFound = _useState18[1];
+
+  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({
     answeredCount: 0,
     unansweredCount: 0,
     score: 0
   }),
-      _useState18 = _slicedToArray(_useState17, 2),
-      endSessionDetails = _useState18[0],
-      setEndSessionDetails = _useState18[1];
+      _useState20 = _slicedToArray(_useState19, 2),
+      endSessionDetails = _useState20[0],
+      setEndSessionDetails = _useState20[1];
 
   var endQuizSession = function endQuizSession() {
     if (localStorage.getItem('quiz_answers')) {
@@ -3873,9 +3880,12 @@ var useQuiz = function useQuiz() {
 
   var handelChangeMode = function handelChangeMode(mode) {
     if (sessionStarted && confirm(data.restart_session_text)) {
+      localStorage.removeItem('quiz_answers');
+      setUserAnswers([]);
       tokenization();
     }
 
+    localStorage.setItem('activeMode', mode);
     setActiveMode(mode);
   };
 
@@ -3937,12 +3947,14 @@ var useQuestionnaire = function useQuestionnaire() {
   var _useContext2 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useContext)(_context__WEBPACK_IMPORTED_MODULE_4__.AppContext),
       apiUrl = _useContext2.apiUrl;
 
-  var storageAnswers = localStorage.getItem('quiz_answers') ? JSON.parse(localStorage.getItem('quiz_answers')) : [];
+  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)([]),
+      _useState22 = _slicedToArray(_useState21, 2),
+      userAnswers = _useState22[0],
+      setUserAnswers = _useState22[1];
 
-  var _useState19 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(storageAnswers),
-      _useState20 = _slicedToArray(_useState19, 2),
-      userAnswers = _useState20[0],
-      setUserAnswers = _useState20[1];
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    setUserAnswers(localStorage.getItem('quiz_answers') ? JSON.parse(localStorage.getItem('quiz_answers')) : []);
+  }, [localStorage.getItem('quiz_answers')]);
 
   var handleSubmitAnswer = function handleSubmitAnswer(question, name) {
     var _document$querySelect;
@@ -3984,21 +3996,19 @@ var useUserDetails = function useUserDetails() {
   var _useParams2 = (0,react_router__WEBPACK_IMPORTED_MODULE_8__.useParams)(),
       id = _useParams2.id;
 
-  var _useState21 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
-      _useState22 = _slicedToArray(_useState21, 2),
-      userVerified = _useState22[0],
-      setUserVerified = _useState22[1];
-
-  var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({}),
+  var _useState23 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)(false),
       _useState24 = _slicedToArray(_useState23, 2),
-      userDetails = _useState24[0],
-      setUserDetails = _useState24[1];
+      userVerified = _useState24[0],
+      setUserVerified = _useState24[1];
 
-  var userToken = localStorage.getItem('user_token');
+  var _useState25 = (0,react__WEBPACK_IMPORTED_MODULE_0__.useState)({}),
+      _useState26 = _slicedToArray(_useState25, 2),
+      userDetails = _useState26[0],
+      setUserDetails = _useState26[1];
 
   var handleSubmit = function handleSubmit(e) {
     e.preventDefault();
-    axios__WEBPACK_IMPORTED_MODULE_3___default().put("".concat(apiUrl, "/quiz/").concat(id, "/").concat(userToken, "/add-guest-user"), FormSerializeJSON(e.currentTarget)).then(function (response) {
+    axios__WEBPACK_IMPORTED_MODULE_3___default().put("".concat(apiUrl, "/quiz/").concat(id, "/").concat(localStorage.getItem('user_token'), "/add-guest-user"), FormSerializeJSON(e.currentTarget)).then(function (response) {
       return response.data;
     }).then(function (data) {
       if (Object.values(data).length) {
@@ -4015,8 +4025,13 @@ var useUserDetails = function useUserDetails() {
     });
   };
 
-  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
-    axios__WEBPACK_IMPORTED_MODULE_3___default().get("".concat(apiUrl, "/quiz/").concat(id, "/").concat(userToken, "/get-guest-user")).then(function (response) {
+  var initializeUserDetails = function initializeUserDetails() {
+    setUserVerified(false);
+    setUserDetails({});
+  };
+
+  var updateUserDetails = function updateUserDetails() {
+    axios__WEBPACK_IMPORTED_MODULE_3___default().get("".concat(apiUrl, "/quiz/").concat(id, "/").concat(localStorage.getItem('user_token'), "/get-guest-user")).then(function (response) {
       return response.data;
     }).then(function (data) {
       if (Object.values(data).length) {
@@ -4024,13 +4039,26 @@ var useUserDetails = function useUserDetails() {
         setUserDetails(data);
       }
     });
-  }, [userToken]);
+  };
+
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    updateUserDetails();
+  }, [userVerified, localStorage.getItem('user_token')]);
+  (0,react__WEBPACK_IMPORTED_MODULE_0__.useEffect)(function () {
+    var answers = localStorage.getItem('quiz_answers') ? JSON.parse(localStorage.getItem('quiz_answers')) : [];
+
+    if (!answers.length) {
+      initializeUserDetails();
+    }
+  }, [localStorage.getItem('quiz_answers')]);
   return {
     userVerified: userVerified,
     userDetails: _objectSpread(_objectSpread({}, userDetails), {}, {
-      token: userToken
+      token: localStorage.getItem('user_token')
     }),
-    handleSubmit: handleSubmit
+    handleSubmit: handleSubmit,
+    updateUserDetails: updateUserDetails,
+    initializeUserDetails: initializeUserDetails
   };
 };
 

@@ -182,6 +182,9 @@ class UserQuizService extends AbstractService
     {
         $session = $this->quizUserSessionRepository->fetchById($tokenData['id']);
         $guestUser = $this->quizGuestUserRepository->fetchBySessionId($tokenData['id']);
+
+        if (empty($guestUser)) return null;
+
         $quizId = $session->quiz_id;
         $submitDate = (new Carbon())->now();
 
